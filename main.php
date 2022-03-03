@@ -9,22 +9,32 @@ if (isset($_GET['message'])) {
 }
 
 //select data from database
-$selectSQL = "SELECT * FROM `students`";
+$selectSQL = "SELECT * FROM `products`";
 $runSelectSQL = mysqli_query($connection, $selectSQL);
 
 //delete data from database
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
+    $image = $_GET['image'];
 
-    $deleteSQL = "DELETE FROM `students` WHERE `id`='$id'";
+
+    $deleteSQL = "DELETE FROM `products` WHERE `id`='$id'";
     $runDeleteSQL = mysqli_query($connection, $deleteSQL);
 
     if ($runDeleteSQL == true) {
 
-        header('location:main.php?message= Student info deleted successfully.');
+//        chmod("asset/images/$image", 0644);
+//        unlink("asset/images/$image");
+
+        $imagePath = "asset/images/".$image;
+        if (file_exists($imagePath)) {
+//            chmod($imagePath, 0644);
+            unlink($imagePath);
+        }
+        header('location:main.php?message= Product deleted successfully.');
     }else{
 
-        header('location:main.php?message= Opps! Student info delete failed.');
+        header('location:main.php?message= Opps! Product delete failed.');
     }
 }
 
@@ -41,7 +51,7 @@ if (isset($_GET['id'])) {
     <link rel="stylesheet" href="asset/css/bootstrap.min.css">
     <link rel="stylesheet" href="asset/css/all.min.css">
     <link rel="stylesheet" href="asset/css/fontawesome.min.css">
-    <title> Student Crud</title>
+    <title> Product Crud</title>
 </head>
 <body>
 
@@ -60,29 +70,31 @@ if (isset($_GET['id'])) {
                 <?php }?>
 
                 <div class="clearfix">
-                    <h4 class="float-left">Student Info</h4>
+                    <h4 class="float-left">Product Info</h4>
                     <a href="create.php" class="float-right btn btn-success btn-sm">Add New</a>
                 </div>
 
                 <table class="table table-bordered mt-3">
                     <thead>
                     <tr>
+                        <th>Id</th>
                         <th>Name</th>
-                        <th>Phone</th>
-                        <th>Email</th>
+                        <th>Image</th>
                         <th>Action</th>
                     </tr>
                     </thead>
                     <tbody>
 
-                    <?php while ($student = mysqli_fetch_assoc($runSelectSQL)){?>
+                    <?php while ($product = mysqli_fetch_assoc($runSelectSQL)){?>
                         <tr>
-                            <td><?php echo $student['name']?></td>
-                            <td><?php echo $student['phone']?></td>
-                            <td><?php echo $student['email']?></td>
+                            <td><?php echo $product['id']?></td>
+                            <td><?php echo $product['name']?></td>
                             <td>
-                                <a href="edit.php?id=<?php echo $student['id']?>" class="btn btn-success btn-sm"><i class="fa fa-pen"></i></a>
-                                <a href="main.php?id=<?php echo $student['id']?>"  class="btn btn-danger btn-sm" onclick="return confirm('Do you want to delete?')">
+                                <img src="asset/images/<?php echo $product['image']?>" style="width: 90px; height: 65px" alt="<?php echo $product['name']?>">
+                            </td>
+                            <td>
+                                <a href="edit.php?id=<?php echo $product['id']?>&image=<?php echo $product['image']?>" class="btn btn-success btn-sm"><i class="fa fa-pen"></i></a>
+                                <a href="main.php?id=<?php echo $product['id']?>&image=<?php echo $product['image']?>"  class="btn btn-danger btn-sm" onclick="return confirm('Do you want to delete?')">
                                     <i class="fa fa-trash"></i>
                                 </a>
                             </td>
